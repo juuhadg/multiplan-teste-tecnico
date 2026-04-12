@@ -1,6 +1,6 @@
 export type Role = 'lojista' | 'comprador';
 
-export type OfferStatus = 'active' | 'expired' | 'inactive';
+export type OfferStatus = 'active' | 'expired' | 'inactive' | 'sold_out';
 
 export interface User {
   id: string;

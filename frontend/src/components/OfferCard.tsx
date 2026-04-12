@@ -9,12 +9,14 @@ const STATUS_LABEL: Record<Offer['status'], string> = {
   active: 'Ativa',
   expired: 'Expirada',
   inactive: 'Encerrada',
+  sold_out: 'Esgotada',
 };
 
 const STATUS_CLASS: Record<Offer['status'], string> = {
   active: 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200',
   expired: 'bg-slate-100 text-slate-600 ring-1 ring-slate-200',
   inactive: 'bg-rose-50 text-rose-700 ring-1 ring-rose-200',
+  sold_out: 'bg-amber-50 text-amber-700 ring-1 ring-amber-200',
 };
 
 export function OfferCard({ offer, action }: Props) {

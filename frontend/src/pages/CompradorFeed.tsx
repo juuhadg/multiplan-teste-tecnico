@@ -83,6 +83,7 @@ export function CompradorFeed() {
   const filterLabels: Record<StatusFilter, string> = {
     active: 'Ativas',
     all: 'Todas',
+    sold_out: 'Esgotadas',
     inactive: 'Encerradas',
     expired: 'Expiradas',
   };
@@ -97,7 +98,7 @@ export function CompradorFeed() {
           </p>
         </div>
         <div className="inline-flex gap-1 rounded-xl border border-slate-200 bg-white p-1 text-sm shadow-sm">
-          {(['active', 'all', 'inactive', 'expired'] as StatusFilter[]).map((f) => (
+          {(['active', 'all', 'sold_out', 'inactive', 'expired'] as StatusFilter[]).map((f) => (
             <button
               key={f}
               onClick={() => setFilter(f)}
