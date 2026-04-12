@@ -78,7 +78,7 @@ describe('InterestsService', () => {
       expect(interestsRepo.create).not.toHaveBeenCalled();
     });
 
-    it('should deactivate offer when stock reaches 0', async () => {
+    it('should mark offer as sold out when stock reaches 0', async () => {
       interestsRepo.findOne.mockResolvedValue(null);
       offersRepo.decrementStock.mockResolvedValue({
         _id: new Types.ObjectId(offerId),
@@ -90,7 +90,7 @@ describe('InterestsService', () => {
 
       expect(offersRepo.updateOne).toHaveBeenCalledWith(
         { _id: offerId },
-        { $set: { status: OfferStatus.INACTIVE } },
+        { $set: { status: OfferStatus.SOLD_OUT } },
       );
     });
 

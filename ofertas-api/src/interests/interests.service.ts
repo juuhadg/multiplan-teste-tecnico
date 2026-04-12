@@ -31,7 +31,7 @@ export class InterestsService {
     if (updatedOffer.stock === 0) {
       await this.offersRepository.updateOne(
         { _id: offerId },
-        { $set: { status: OfferStatus.INACTIVE } },
+        { $set: { status: OfferStatus.SOLD_OUT } },
       );
     }
 
