@@ -9,5 +9,35 @@ body,
 }
 
 body {
-  @apply bg-slate-50 text-slate-900 antialiased;
+  @apply font-sans text-slate-900 antialiased;
+  background: radial-gradient(
+      1200px 600px at 10% -10%,
+      rgba(99, 102, 241, 0.08),
+      transparent 60%
+    ),
+    radial-gradient(
+      1000px 500px at 100% 0%,
+      rgba(168, 85, 247, 0.06),
+      transparent 55%
+    ),
+    #f8fafc;
+  background-attachment: fixed;
+}
+
+@layer components {
+  .input {
+    @apply mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm shadow-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100;
+  }
+
+  .label {
+    @apply block text-sm font-medium text-slate-700;
+  }
+
+  .btn-primary {
+    @apply inline-flex w-full items-center justify-center rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-200 disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50;
+  }
 }

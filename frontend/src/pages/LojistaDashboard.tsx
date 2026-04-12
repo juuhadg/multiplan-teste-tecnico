@@ -47,15 +47,29 @@ export function LojistaDashboard() {
     <Layout>
       <div className="grid gap-6 lg:grid-cols-[1fr_22rem]">
         <section>
-          <h1 className="mb-4 text-2xl font-semibold">Minhas ofertas</h1>
+          <div className="mb-5">
+            <h1 className="text-2xl font-bold tracking-tight">Minhas ofertas</h1>
+            <p className="mt-1 text-sm text-slate-600">
+              Gerencie suas ofertas e acompanhe os interessados
+            </p>
+          </div>
 
           {loading && <p className="text-slate-600">Carregando...</p>}
-          {error && <p className="text-red-600">{error}</p>}
+          {error && (
+            <p className="mb-3 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700 ring-1 ring-rose-200">
+              {error}
+            </p>
+          )}
 
           {!loading && offers.length === 0 && (
-            <p className="text-slate-600">
-              Voce ainda nao publicou nenhuma oferta.
-            </p>
+            <div className="rounded-2xl border border-dashed border-slate-300 bg-white/50 p-8 text-center">
+              <p className="text-sm text-slate-600">
+                Voce ainda nao publicou nenhuma oferta.
+              </p>
+              <p className="mt-1 text-xs text-slate-500">
+                Use o formulario ao lado para criar a primeira.
+              </p>
+            </div>
           )}
 
           <div className="grid gap-4 sm:grid-cols-2">
@@ -67,9 +81,9 @@ export function LojistaDashboard() {
                   offer.status === 'active' ? (
                     <button
                       onClick={() => handleClose(offer._id)}
-                      className="w-full rounded border border-red-300 py-1.5 text-sm font-medium text-red-700 hover:bg-red-50"
+                      className="w-full rounded-lg border border-rose-200 bg-rose-50 py-2 text-sm font-semibold text-rose-700 transition hover:bg-rose-100"
                     >
-                      Encerrar
+                      Encerrar oferta
                     </button>
                   ) : null
                 }

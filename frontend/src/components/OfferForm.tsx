@@ -47,34 +47,39 @@ export function OfferForm({ onCreated }: Props) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-3 rounded-lg border border-slate-200 bg-white p-4 shadow-sm"
+      className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-card"
     >
-      <h2 className="text-lg font-semibold">Nova oferta</h2>
+      <div>
+        <h2 className="text-lg font-semibold">Nova oferta</h2>
+        <p className="text-xs text-slate-500">
+          Publique e notifique compradores em tempo real
+        </p>
+      </div>
 
       <div>
-        <label className="block text-sm font-medium">Titulo</label>
+        <label className="label">Titulo</label>
         <input
           required
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="mt-1 w-full rounded border border-slate-300 px-3 py-2 focus:border-slate-500 focus:outline-none"
+          className="input"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium">Descricao</label>
+        <label className="label">Descricao</label>
         <textarea
           required
           rows={2}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="mt-1 w-full rounded border border-slate-300 px-3 py-2 focus:border-slate-500 focus:outline-none"
+          className="input"
         />
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-sm font-medium">Desconto (%)</label>
+          <label className="label">Desconto (%)</label>
           <input
             type="number"
             required
@@ -82,40 +87,40 @@ export function OfferForm({ onCreated }: Props) {
             max={100}
             value={discount}
             onChange={(e) => setDiscount(Number(e.target.value))}
-            className="mt-1 w-full rounded border border-slate-300 px-3 py-2 focus:border-slate-500 focus:outline-none"
+            className="input"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium">Estoque</label>
+          <label className="label">Estoque</label>
           <input
             type="number"
             required
             min={1}
             value={stock}
             onChange={(e) => setStock(Number(e.target.value))}
-            className="mt-1 w-full rounded border border-slate-300 px-3 py-2 focus:border-slate-500 focus:outline-none"
+            className="input"
           />
         </div>
       </div>
 
       <div>
-        <label className="block text-sm font-medium">Validade</label>
+        <label className="label">Validade</label>
         <input
           type="datetime-local"
           required
           value={expiresAt}
           onChange={(e) => setExpiresAt(e.target.value)}
-          className="mt-1 w-full rounded border border-slate-300 px-3 py-2 focus:border-slate-500 focus:outline-none"
+          className="input"
         />
       </div>
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && (
+        <p className="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700 ring-1 ring-rose-200">
+          {error}
+        </p>
+      )}
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full rounded bg-slate-900 py-2 font-medium text-white hover:bg-slate-800 disabled:opacity-60"
-      >
+      <button type="submit" disabled={loading} className="btn-primary">
         {loading ? 'Salvando...' : 'Publicar oferta'}
       </button>
     </form>

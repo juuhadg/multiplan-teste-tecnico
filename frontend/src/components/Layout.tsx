@@ -13,30 +13,35 @@ export function Layout({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex min-h-full flex-col">
-      <header className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
+      <header className="sticky top-0 z-40 border-b border-slate-200/70 bg-white/80 backdrop-blur">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
           <Link
             to={user?.role === 'lojista' ? '/dashboard' : '/feed'}
-            className="text-lg font-semibold"
+            className="flex items-center gap-2 text-base font-bold tracking-tight"
           >
-            Ofertas Relampago
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-sm">
+              O
+            </span>
+            <span>Ofertas Relampago</span>
           </Link>
           {user && (
             <div className="flex items-center gap-3 text-sm">
-              <span className="hidden text-slate-600 sm:inline">
-                {user.name} <span className="text-slate-400">({user.role})</span>
-              </span>
-              <button
-                onClick={handleLogout}
-                className="rounded border border-slate-300 px-3 py-1 hover:bg-slate-100"
-              >
+              <div className="hidden text-right sm:block">
+                <div className="font-medium text-slate-900">{user.name}</div>
+                <div className="text-xs capitalize text-indigo-600">
+                  {user.role}
+                </div>
+              </div>
+              <button onClick={handleLogout} className="btn-ghost">
                 Sair
               </button>
             </div>
           )}
         </div>
       </header>
-      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6">{children}</main>
+      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
+        {children}
+      </main>
     </div>
   );
 }

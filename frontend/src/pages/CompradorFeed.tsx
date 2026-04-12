@@ -80,30 +80,50 @@ export function CompradorFeed() {
     }
   }
 
+  const filterLabels: Record<StatusFilter, string> = {
+    active: 'Ativas',
+    all: 'Todas',
+    inactive: 'Encerradas',
+    expired: 'Expiradas',
+  };
+
   return (
     <Layout>
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-semibold">Feed de ofertas</h1>
-        <div className="flex gap-1 rounded border border-slate-300 bg-white p-1 text-sm">
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Feed de ofertas</h1>
+          <p className="mt-1 text-sm text-slate-600">
+            Ofertas em tempo real dos lojistas
+          </p>
+        </div>
+        <div className="inline-flex gap-1 rounded-xl border border-slate-200 bg-white p-1 text-sm shadow-sm">
           {(['active', 'all', 'inactive', 'expired'] as StatusFilter[]).map((f) => (
             <button
               key={f}
               onClick={() => setFilter(f)}
-              className={`rounded px-3 py-1 capitalize ${
-                filter === f ? 'bg-slate-900 text-white' : 'text-slate-700'
+              className={`rounded-lg px-3 py-1.5 font-medium transition ${
+                filter === f
+                  ? 'bg-indigo-600 text-white shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              {f === 'all' ? 'Todas' : f === 'active' ? 'Ativas' : f === 'inactive' ? 'Encerradas' : 'Expiradas'}
+              {filterLabels[f]}
             </button>
           ))}
         </div>
       </div>
 
       {loading && <p className="text-slate-600">Carregando...</p>}
-      {error && <p className="mb-3 text-red-600">{error}</p>}
+      {error && (
+        <p className="mb-3 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700 ring-1 ring-rose-200">
+          {error}
+        </p>
+      )}
 
       {!loading && offers.length === 0 && (
-        <p className="text-slate-600">Nenhuma oferta encontrada.</p>
+        <div className="rounded-2xl border border-dashed border-slate-300 bg-white/50 p-12 text-center">
+          <p className="text-sm text-slate-600">Nenhuma oferta encontrada.</p>
+        </div>
       )}
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -116,7 +136,7 @@ export function CompradorFeed() {
                 <button
                   onClick={() => handleInterest(offer)}
                   disabled={interestingId === offer._id}
-                  className="w-full rounded bg-slate-900 py-1.5 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-60"
+                  className="btn-primary"
                 >
                   {interestingId === offer._id ? 'Registrando...' : 'Tenho interesse'}
                 </button>
@@ -127,7 +147,7 @@ export function CompradorFeed() {
       </div>
 
       {toast && (
-        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white shadow-lg">
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white shadow-xl ring-1 ring-white/10">
           {toast}
         </div>
       )}

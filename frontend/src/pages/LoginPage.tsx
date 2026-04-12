@@ -17,7 +17,9 @@ export function LoginPage() {
     setLoading(true);
     try {
       const user = await login(email, password);
-      navigate(user.role === 'lojista' ? '/dashboard' : '/feed', { replace: true });
+      navigate(user.role === 'lojista' ? '/dashboard' : '/feed', {
+        replace: true,
+      });
     } catch (err) {
       const message = axios.isAxiosError(err)
         ? (err.response?.data as { message?: string })?.message ?? 'Falha no login'
@@ -30,51 +32,64 @@ export function LoginPage() {
 
   return (
     <div className="flex min-h-full items-center justify-center p-4">
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-sm space-y-4 rounded-lg bg-white p-6 shadow"
-      >
-        <h1 className="text-xl font-semibold">Entrar</h1>
-
-        <div>
-          <label className="block text-sm font-medium">Email</label>
-          <input
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="mt-1 w-full rounded border border-slate-300 px-3 py-2 focus:border-slate-500 focus:outline-none"
-          />
+      <div className="w-full max-w-sm">
+        <div className="mb-6 flex flex-col items-center text-center">
+          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 text-lg font-bold text-white shadow-lg">
+            O
+          </div>
+          <h1 className="text-2xl font-bold tracking-tight">Ofertas Relampago</h1>
+          <p className="mt-1 text-sm text-slate-600">
+            Entre para ver ofertas em tempo real
+          </p>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium">Senha</label>
-          <input
-            type="password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="mt-1 w-full rounded border border-slate-300 px-3 py-2 focus:border-slate-500 focus:outline-none"
-          />
-        </div>
-
-        {error && <p className="text-sm text-red-600">{error}</p>}
-
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full rounded bg-slate-900 py-2 font-medium text-white hover:bg-slate-800 disabled:opacity-60"
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-card"
         >
-          {loading ? 'Entrando...' : 'Entrar'}
-        </button>
+          <div>
+            <label className="label">Email</label>
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="input"
+            />
+          </div>
 
-        <p className="text-center text-sm text-slate-600">
-          Nao tem conta?{' '}
-          <Link to="/register" className="font-medium text-slate-900 underline">
-            Cadastre-se
-          </Link>
-        </p>
-      </form>
+          <div>
+            <label className="label">Senha</label>
+            <input
+              type="password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="input"
+            />
+          </div>
+
+          {error && (
+            <p className="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700 ring-1 ring-rose-200">
+              {error}
+            </p>
+          )}
+
+          <button type="submit" disabled={loading} className="btn-primary">
+            {loading ? 'Entrando...' : 'Entrar'}
+          </button>
+
+          <p className="text-center text-sm text-slate-600">
+            Nao tem conta?{' '}
+            <Link
+              to="/register"
+              className="font-semibold text-indigo-600 hover:text-indigo-700"
+            >
+              Cadastre-se
+            </Link>
+          </p>
+        </form>
+      </div>
     </div>
   );
 }
