@@ -24,6 +24,7 @@ export interface Offer {
   expiresAt: string;
   status: OfferStatus;
   ownerId: string;
+  ownerName?: string;
   interestCount: number;
   createdAt: string;
   updatedAt: string;

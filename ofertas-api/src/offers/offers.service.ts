@@ -26,7 +26,20 @@ export class OffersService {
     const filter: Record<string, unknown> = {};
     if (status) filter.status = status;
     if (ownerId) filter.ownerId = new Types.ObjectId(ownerId);
-    return this.offersRepository.find(filter, page, limit);
+    const offers = await this.offersRepository.find(filter, page, limit);
+    return offers.map((doc) => {
+      const obj = doc.toObject();
+      const owner = obj.ownerId as unknown as
+        | { _id: Types.ObjectId; name: string }
+        | Types.ObjectId;
+      const isPopulated =
+        owner !== null && typeof owner === 'object' && 'name' in owner;
+      return {
+        ...obj,
+        ownerId: isPopulated ? owner._id.toString() : owner.toString(),
+        ownerName: isPopulated ? owner.name : undefined,
+      };
+    });
   }
 
   async create(dto: CreateOfferDto, ownerId: string) {

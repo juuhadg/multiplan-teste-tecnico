@@ -40,6 +40,12 @@ export function OfferCard({ offer, action }: Props) {
         </span>
       </div>
 
+      {offer.ownerName && (
+        <p className="mt-0.5 text-xs font-medium text-slate-500">
+          por <span className="text-slate-700">{offer.ownerName}</span>
+        </p>
+      )}
+
       <p className="mt-1.5 line-clamp-2 text-sm text-slate-600">
         {offer.description}
       </p>

@@ -5,6 +5,7 @@ import {
   closeMongoConnection,
   createTestingMongoModule,
 } from '../test/mongo-memory-test-db';
+import { User, UserSchema } from '../users/schemas/user.schema';
 import { OfferStatus } from './enums/offer-status.enum';
 import { Offer, OfferSchema } from './schemas/offer.schema';
 import { OffersRepository } from './offers.repository';
@@ -30,6 +31,7 @@ describe('OffersRepository', () => {
         createTestingMongoModule(),
         MongooseModule.forFeature([
           { name: Offer.name, schema: OfferSchema },
+          { name: User.name, schema: UserSchema },
         ]),
       ],
       providers: [OffersRepository],
