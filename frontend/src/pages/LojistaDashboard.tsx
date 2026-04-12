@@ -84,22 +84,22 @@ export function LojistaDashboard() {
                 key={offer._id}
                 offer={offer}
                 action={
-                  offer.status === 'active' ? (
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => setEditing(offer)}
-                        className="flex-1 rounded-lg border border-indigo-200 bg-indigo-50 py-2 text-sm font-semibold text-indigo-700 transition hover:bg-indigo-100"
-                      >
-                        Editar
-                      </button>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setEditing(offer)}
+                      className="flex-1 rounded-lg border border-indigo-200 bg-indigo-50 py-2 text-sm font-semibold text-indigo-700 transition hover:bg-indigo-100"
+                    >
+                      Editar
+                    </button>
+                    {offer.status === 'active' && (
                       <button
                         onClick={() => handleClose(offer._id)}
                         className="flex-1 rounded-lg border border-rose-200 bg-rose-50 py-2 text-sm font-semibold text-rose-700 transition hover:bg-rose-100"
                       >
                         Encerrar
                       </button>
-                    </div>
-                  ) : null
+                    )}
+                  </div>
                 }
               />
             ))}

@@ -39,8 +39,21 @@ export class OffersService {
   }
 
   async update(id: string, dto: UpdateOfferDto, ownerId: string) {
-    await this.assertOwnership(id, ownerId);
-    return this.offersRepository.updateOne({ _id: id }, { $set: dto });
+    const current = await this.assertOwnership(id, ownerId);
+
+    const nextExpiresAt = dto.expiresAt ?? current.expiresAt;
+    const nextStock = dto.stock ?? current.stock;
+    const update: Record<string, unknown> = { ...dto };
+
+    if (
+      current.status !== OfferStatus.ACTIVE &&
+      nextStock > 0 &&
+      new Date(nextExpiresAt).getTime() > Date.now()
+    ) {
+      update.status = OfferStatus.ACTIVE;
+    }
+
+    return this.offersRepository.updateOne({ _id: id }, { $set: update });
   }
 
   async close(id: string, ownerId: string) {
@@ -59,5 +72,6 @@ export class OffersService {
     if (offer.ownerId.toString() !== ownerId) {
       throw new ForbiddenException('You can only manage your own offers');
     }
+    return offer;
   }
 }
