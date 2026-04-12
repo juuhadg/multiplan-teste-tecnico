@@ -1,7 +1,14 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import axios from 'axios';
 import { offersApi } from '../api/offers';
-import type { Offer } from '../types';
+import type { Offer, OfferStatus } from '../types';
+
+const STATUS_OPTIONS: { value: OfferStatus; label: string }[] = [
+  { value: 'active', label: 'Ativa' },
+  { value: 'inactive', label: 'Encerrada' },
+  { value: 'sold_out', label: 'Esgotada' },
+  { value: 'expired', label: 'Expirada' },
+];
 
 interface Props {
   onCreated?: (offer: Offer) => void;
@@ -42,6 +49,7 @@ export function OfferForm({ onCreated, editing, onUpdated, onCancelEdit }: Props
   const [discount, setDiscount] = useState(10);
   const [stock, setStock] = useState(10);
   const [expiresAt, setExpiresAt] = useState('');
+  const [status, setStatus] = useState<OfferStatus>('active');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -55,6 +63,7 @@ export function OfferForm({ onCreated, editing, onUpdated, onCancelEdit }: Props
       setDiscount(editing.discount);
       setStock(editing.stock);
       setExpiresAt(toLocalInputValue(new Date(editing.expiresAt)));
+      setStatus(editing.status);
       setError(null);
     } else {
       setTitle('');
@@ -62,6 +71,7 @@ export function OfferForm({ onCreated, editing, onUpdated, onCancelEdit }: Props
       setDiscount(10);
       setStock(10);
       setExpiresAt('');
+      setStatus('active');
     }
   }, [editing]);
 
@@ -86,7 +96,10 @@ export function OfferForm({ onCreated, editing, onUpdated, onCancelEdit }: Props
         expiresAt: new Date(expiresAt).toISOString(),
       };
       if (isEditing && editing) {
-        const offer = await offersApi.update(editing._id, payload);
+        const offer = await offersApi.update(editing._id, {
+          ...payload,
+          ...(status !== editing.status ? { status } : {}),
+        });
         onUpdated?.(offer);
       } else {
         const offer = await offersApi.create(payload);
@@ -241,6 +254,23 @@ export function OfferForm({ onCreated, editing, onUpdated, onCancelEdit }: Props
           className="input mt-2"
         />
       </div>
+
+      {isEditing && (
+        <div>
+          <label className="label">Status</label>
+          <select
+            value={status}
+            onChange={(e) => setStatus(e.target.value as OfferStatus)}
+            className="input mt-1"
+          >
+            {STATUS_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       {error && (
         <p className="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700 ring-1 ring-rose-200">

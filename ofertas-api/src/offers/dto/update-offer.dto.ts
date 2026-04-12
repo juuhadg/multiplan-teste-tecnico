@@ -1,6 +1,7 @@
 import { Type } from 'class-transformer';
 import {
   IsDate,
+  IsEnum,
   IsInt,
   IsNotEmpty,
   IsNumber,
@@ -10,6 +11,7 @@ import {
   Min,
   MinDate,
 } from 'class-validator';
+import { OfferStatus } from '../enums/offer-status.enum';
 
 export class UpdateOfferDto {
   @IsOptional()
@@ -38,4 +40,8 @@ export class UpdateOfferDto {
   @Type(() => Date)
   @MinDate(() => new Date())
   expiresAt?: Date;
+
+  @IsOptional()
+  @IsEnum(OfferStatus)
+  status?: OfferStatus;
 }

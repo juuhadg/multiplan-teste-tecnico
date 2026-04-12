@@ -15,8 +15,10 @@ export const offersApi = {
   create: (input: CreateOfferInput) =>
     api.post<Offer>('/offers', input).then((r) => r.data),
 
-  update: (id: string, input: Partial<CreateOfferInput>) =>
-    api.patch<Offer>(`/offers/${id}`, input).then((r) => r.data),
+  update: (
+    id: string,
+    input: Partial<CreateOfferInput> & { status?: OfferStatus },
+  ) => api.patch<Offer>(`/offers/${id}`, input).then((r) => r.data),
 
   close: (id: string) =>
     api.patch<Offer>(`/offers/${id}/close`).then((r) => r.data),

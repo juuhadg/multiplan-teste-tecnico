@@ -41,16 +41,18 @@ export class OffersService {
   async update(id: string, dto: UpdateOfferDto, ownerId: string) {
     const current = await this.assertOwnership(id, ownerId);
 
-    const nextExpiresAt = dto.expiresAt ?? current.expiresAt;
-    const nextStock = dto.stock ?? current.stock;
     const update: Record<string, unknown> = { ...dto };
 
-    if (
-      current.status !== OfferStatus.ACTIVE &&
-      nextStock > 0 &&
-      new Date(nextExpiresAt).getTime() > Date.now()
-    ) {
-      update.status = OfferStatus.ACTIVE;
+    if (dto.status === undefined) {
+      const nextExpiresAt = dto.expiresAt ?? current.expiresAt;
+      const nextStock = dto.stock ?? current.stock;
+      if (
+        current.status !== OfferStatus.ACTIVE &&
+        nextStock > 0 &&
+        new Date(nextExpiresAt).getTime() > Date.now()
+      ) {
+        update.status = OfferStatus.ACTIVE;
+      }
     }
 
     return this.offersRepository.updateOne({ _id: id }, { $set: update });

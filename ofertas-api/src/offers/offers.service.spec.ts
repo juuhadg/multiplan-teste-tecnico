@@ -153,6 +153,22 @@ describe('OffersService', () => {
       expect(update.$set.status).toBe(OfferStatus.ACTIVE);
     });
 
+    it('should respect explicit status from dto and skip auto-reactivation', async () => {
+      const expired = { ...mockOffer, status: OfferStatus.EXPIRED, stock: 3 };
+      repository.findOne.mockResolvedValue(expired);
+      repository.updateOne.mockResolvedValue(expired);
+
+      const future = new Date(Date.now() + 86_400_000);
+      await service.update(
+        offerId,
+        { expiresAt: future, status: OfferStatus.INACTIVE },
+        ownerId,
+      );
+
+      const update = repository.updateOne.mock.calls[0][1] as any;
+      expect(update.$set.status).toBe(OfferStatus.INACTIVE);
+    });
+
     it('should not change status on simple field edit of active offer', async () => {
       repository.findOne.mockResolvedValue(mockOffer);
       repository.updateOne.mockResolvedValue(mockOffer);
