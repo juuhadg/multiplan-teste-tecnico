@@ -42,27 +42,26 @@ export function OfferCard({ offer, action }: Props) {
         {offer.description}
       </p>
 
-      <div className="mt-4 flex items-center gap-3">
-        <div className="rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 px-3 py-2 text-white shadow-sm">
-          <div className="text-[10px] font-semibold uppercase tracking-wide opacity-80">
-            Desconto
+      <div className="mt-4 grid grid-cols-3 gap-3 text-xs">
+        <div>
+          <div className="text-slate-500">Desconto</div>
+          <div className="text-base font-semibold text-indigo-600">
+            {offer.discount}%
           </div>
-          <div className="text-2xl font-bold leading-none">-{offer.discount}%</div>
         </div>
-
-        <div className="flex-1 grid grid-cols-2 gap-x-3 gap-y-1 text-xs">
-          <div>
-            <div className="text-slate-500">Estoque</div>
-            <div className="font-semibold text-slate-900">{offer.stock}</div>
+        <div>
+          <div className="text-slate-500">Estoque</div>
+          <div className="text-base font-semibold text-slate-900">{offer.stock}</div>
+        </div>
+        <div>
+          <div className="text-slate-500">Interessados</div>
+          <div className="text-base font-semibold text-slate-900">
+            {offer.interestCount}
           </div>
-          <div>
-            <div className="text-slate-500">Interessados</div>
-            <div className="font-semibold text-slate-900">{offer.interestCount}</div>
-          </div>
-          <div className="col-span-2">
-            <div className="text-slate-500">Expira em</div>
-            <div className="font-medium text-slate-700">{expires}</div>
-          </div>
+        </div>
+        <div className="col-span-3">
+          <div className="text-slate-500">Expira em</div>
+          <div className="font-medium text-slate-700">{expires}</div>
         </div>
       </div>
 

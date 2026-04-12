@@ -49,22 +49,20 @@ export function NewOfferToast({ offer, onClose }: Props) {
             {offer.description}
           </p>
 
-          <div className="mt-4 flex items-center gap-3">
-            <div className="rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 px-3 py-2 text-white shadow-sm">
-              <div className="text-[9px] font-semibold uppercase tracking-wide opacity-80">
-                Desconto
-              </div>
-              <div className="text-xl font-bold leading-none">-{offer.discount}%</div>
+          <div className="mt-3 space-y-1 text-xs">
+            <div className="flex justify-between">
+              <span className="text-slate-500">Desconto</span>
+              <span className="font-semibold text-indigo-600">
+                {offer.discount}%
+              </span>
             </div>
-            <div className="flex-1 text-xs">
-              <div className="flex justify-between">
-                <span className="text-slate-500">Estoque</span>
-                <span className="font-semibold text-slate-900">{offer.stock}</span>
-              </div>
-              <div className="mt-0.5 flex justify-between">
-                <span className="text-slate-500">Expira</span>
-                <span className="font-medium text-slate-700">{expires}</span>
-              </div>
+            <div className="flex justify-between">
+              <span className="text-slate-500">Estoque</span>
+              <span className="font-semibold text-slate-900">{offer.stock}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-slate-500">Expira</span>
+              <span className="font-medium text-slate-700">{expires}</span>
             </div>
           </div>
         </div>

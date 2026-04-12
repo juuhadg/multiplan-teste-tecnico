@@ -20,9 +20,9 @@ export function Layout({ children }: { children: ReactNode }) {
             className="flex items-center gap-2 text-base font-bold tracking-tight"
           >
             <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-sm">
-              O
+              M
             </span>
-            <span>Ofertas Relampago</span>
+            <span>Multiplan Ofertas</span>
           </Link>
           {user && (
             <div className="flex items-center gap-3 text-sm">

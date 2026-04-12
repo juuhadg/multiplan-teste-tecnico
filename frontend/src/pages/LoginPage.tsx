@@ -35,9 +35,9 @@ export function LoginPage() {
       <div className="w-full max-w-sm">
         <div className="mb-6 flex flex-col items-center text-center">
           <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 text-lg font-bold text-white shadow-lg">
-            O
+            M
           </div>
-          <h1 className="text-2xl font-bold tracking-tight">Ofertas Relampago</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Multiplan Ofertas</h1>
           <p className="mt-1 text-sm text-slate-600">
             Entre para ver ofertas em tempo real
           </p>
