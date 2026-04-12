@@ -116,7 +116,7 @@ describe('OffersRepository', () => {
   });
 
   describe('decrementStock', () => {
-    it('should decrement stock and return updated offer', async () => {
+    it('should decrement stock and increment interestCount atomically', async () => {
       const created = await repository.create(offerData);
 
       const updated = await repository.decrementStock(
@@ -125,6 +125,18 @@ describe('OffersRepository', () => {
 
       expect(updated).not.toBeNull();
       expect(updated!.stock).toBe(offerData.stock - 1);
+      expect(updated!.interestCount).toBe(1);
+    });
+
+    it('should accumulate interestCount across multiple decrements', async () => {
+      const created = await repository.create({ ...offerData, stock: 3 });
+
+      await repository.decrementStock(created._id.toString());
+      await repository.decrementStock(created._id.toString());
+      const last = await repository.decrementStock(created._id.toString());
+
+      expect(last!.stock).toBe(0);
+      expect(last!.interestCount).toBe(3);
     });
 
     it('should return null when stock is 0', async () => {

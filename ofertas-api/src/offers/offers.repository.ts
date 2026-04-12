@@ -45,7 +45,7 @@ export class OffersRepository {
           status: OfferStatus.ACTIVE,
           stock: { $gt: 0 },
         },
-        { $inc: { stock: -1 } },
+        { $inc: { stock: -1, interestCount: 1 } },
         { new: true },
       )
       .exec();

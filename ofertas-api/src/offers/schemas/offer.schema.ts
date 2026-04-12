@@ -24,6 +24,9 @@ export class Offer {
 
   @Prop({ required: true, type: Types.ObjectId, ref: 'User' })
   ownerId: Types.ObjectId;
+
+  @Prop({ required: true, default: 0, min: 0 })
+  interestCount: number;
 }
 
 export const OfferSchema = SchemaFactory.createForClass(Offer);
