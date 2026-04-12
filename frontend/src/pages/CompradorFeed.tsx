@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
 import { Layout } from '../components/Layout';
 import { OfferCard } from '../components/OfferCard';
+import { NewOfferToast } from '../components/NewOfferToast';
 import { offersApi } from '../api/offers';
 import { interestsApi } from '../api/interests';
 import { useNewOfferListener } from '../hooks/useSocket';
@@ -15,6 +16,7 @@ export function CompradorFeed() {
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<StatusFilter>('active');
   const [toast, setToast] = useState<string | null>(null);
+  const [newOffer, setNewOffer] = useState<NewOfferEvent | null>(null);
   const [interestingId, setInterestingId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
@@ -39,8 +41,7 @@ export function CompradorFeed() {
 
   const handleNewOffer = useCallback(
     (evt: NewOfferEvent) => {
-      setToast(`Nova oferta: ${evt.title}`);
-      setTimeout(() => setToast(null), 4000);
+      setNewOffer(evt);
       if (filter === 'active' || filter === 'all') {
         void load();
       }
@@ -129,6 +130,10 @@ export function CompradorFeed() {
         <div className="fixed bottom-4 left-1/2 -translate-x-1/2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white shadow-lg">
           {toast}
         </div>
+      )}
+
+      {newOffer && (
+        <NewOfferToast offer={newOffer} onClose={() => setNewOffer(null)} />
       )}
     </Layout>
   );
