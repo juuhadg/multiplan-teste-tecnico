@@ -11,6 +11,7 @@ export function LojistaDashboard() {
   const [offers, setOffers] = useState<Offer[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [editing, setEditing] = useState<Offer | null>(null);
 
   const load = useCallback(async () => {
     if (!user) return;
@@ -41,6 +42,11 @@ export function LojistaDashboard() {
 
   function handleCreated(offer: Offer) {
     setOffers((prev) => [offer, ...prev]);
+  }
+
+  function handleUpdated(offer: Offer) {
+    setOffers((prev) => prev.map((o) => (o._id === offer._id ? offer : o)));
+    setEditing(null);
   }
 
   return (
@@ -79,12 +85,20 @@ export function LojistaDashboard() {
                 offer={offer}
                 action={
                   offer.status === 'active' ? (
-                    <button
-                      onClick={() => handleClose(offer._id)}
-                      className="w-full rounded-lg border border-rose-200 bg-rose-50 py-2 text-sm font-semibold text-rose-700 transition hover:bg-rose-100"
-                    >
-                      Encerrar oferta
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setEditing(offer)}
+                        className="flex-1 rounded-lg border border-indigo-200 bg-indigo-50 py-2 text-sm font-semibold text-indigo-700 transition hover:bg-indigo-100"
+                      >
+                        Editar
+                      </button>
+                      <button
+                        onClick={() => handleClose(offer._id)}
+                        className="flex-1 rounded-lg border border-rose-200 bg-rose-50 py-2 text-sm font-semibold text-rose-700 transition hover:bg-rose-100"
+                      >
+                        Encerrar
+                      </button>
+                    </div>
                   ) : null
                 }
               />
@@ -93,7 +107,12 @@ export function LojistaDashboard() {
         </section>
 
         <aside>
-          <OfferForm onCreated={handleCreated} />
+          <OfferForm
+            onCreated={handleCreated}
+            editing={editing}
+            onUpdated={handleUpdated}
+            onCancelEdit={() => setEditing(null)}
+          />
         </aside>
       </div>
     </Layout>

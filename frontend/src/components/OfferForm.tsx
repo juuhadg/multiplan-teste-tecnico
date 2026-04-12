@@ -1,10 +1,13 @@
-import { useMemo, useState, type FormEvent } from 'react';
+import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import axios from 'axios';
 import { offersApi } from '../api/offers';
 import type { Offer } from '../types';
 
 interface Props {
-  onCreated: (offer: Offer) => void;
+  onCreated?: (offer: Offer) => void;
+  editing?: Offer | null;
+  onUpdated?: (offer: Offer) => void;
+  onCancelEdit?: () => void;
 }
 
 const EXPIRY_PRESETS = [
@@ -32,7 +35,8 @@ function humanizeRemaining(iso: string): string | null {
   return `expira em ${days} dia${days > 1 ? 's' : ''}`;
 }
 
-export function OfferForm({ onCreated }: Props) {
+export function OfferForm({ onCreated, editing, onUpdated, onCancelEdit }: Props) {
+  const isEditing = !!editing;
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [discount, setDiscount] = useState(10);
@@ -43,6 +47,23 @@ export function OfferForm({ onCreated }: Props) {
 
   const minExpiry = useMemo(() => toLocalInputValue(new Date()), []);
   const remaining = humanizeRemaining(expiresAt);
+
+  useEffect(() => {
+    if (editing) {
+      setTitle(editing.title);
+      setDescription(editing.description);
+      setDiscount(editing.discount);
+      setStock(editing.stock);
+      setExpiresAt(toLocalInputValue(new Date(editing.expiresAt)));
+      setError(null);
+    } else {
+      setTitle('');
+      setDescription('');
+      setDiscount(10);
+      setStock(10);
+      setExpiresAt('');
+    }
+  }, [editing]);
 
   function setPreset(hours: number) {
     setExpiresAt(toLocalInputValue(new Date(Date.now() + hours * 3600_000)));
@@ -57,23 +78,32 @@ export function OfferForm({ onCreated }: Props) {
     setError(null);
     setLoading(true);
     try {
-      const offer = await offersApi.create({
+      const payload = {
         title,
         description,
         discount: Number(discount),
         stock: Number(stock),
         expiresAt: new Date(expiresAt).toISOString(),
-      });
-      onCreated(offer);
-      setTitle('');
-      setDescription('');
-      setDiscount(10);
-      setStock(10);
-      setExpiresAt('');
+      };
+      if (isEditing && editing) {
+        const offer = await offersApi.update(editing._id, payload);
+        onUpdated?.(offer);
+      } else {
+        const offer = await offersApi.create(payload);
+        onCreated?.(offer);
+        setTitle('');
+        setDescription('');
+        setDiscount(10);
+        setStock(10);
+        setExpiresAt('');
+      }
     } catch (err) {
       const message = axios.isAxiosError(err)
-        ? (err.response?.data as { message?: string })?.message ?? 'Falha ao criar'
-        : 'Falha ao criar';
+        ? (err.response?.data as { message?: string })?.message ??
+          (isEditing ? 'Falha ao atualizar' : 'Falha ao criar')
+        : isEditing
+          ? 'Falha ao atualizar'
+          : 'Falha ao criar';
       setError(Array.isArray(message) ? message.join(', ') : message);
     } finally {
       setLoading(false);
@@ -85,11 +115,26 @@ export function OfferForm({ onCreated }: Props) {
       onSubmit={handleSubmit}
       className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-card"
     >
-      <div>
-        <h2 className="text-lg font-semibold">Nova oferta</h2>
-        <p className="text-xs text-slate-500">
-          Publique e notifique compradores em tempo real
-        </p>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h2 className="text-lg font-semibold">
+            {isEditing ? 'Editar oferta' : 'Nova oferta'}
+          </h2>
+          <p className="text-xs text-slate-500">
+            {isEditing
+              ? 'Altere os campos e salve as mudanças'
+              : 'Publique e notifique compradores em tempo real'}
+          </p>
+        </div>
+        {isEditing && (
+          <button
+            type="button"
+            onClick={onCancelEdit}
+            className="text-xs font-medium text-slate-500 hover:text-slate-800"
+          >
+            Cancelar
+          </button>
+        )}
       </div>
 
       <div>
@@ -204,7 +249,11 @@ export function OfferForm({ onCreated }: Props) {
       )}
 
       <button type="submit" disabled={loading} className="btn-primary">
-        {loading ? 'Salvando...' : 'Publicar oferta'}
+        {loading
+          ? 'Salvando...'
+          : isEditing
+            ? 'Salvar alterações'
+            : 'Publicar oferta'}
       </button>
     </form>
   );
