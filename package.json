@@ -1,0 +1,17 @@
+{
+  "name": "multiplan-teste-tecnico",
+  "private": true,
+  "workspaces": [
+    "ofertas-api",
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "npm run dev:api & npm run dev:web",
+    "dev:api": "npm run start:dev -w ofertas-api",
+    "dev:web": "npm run dev -w frontend",
+    "build": "npm run build --workspaces",
+    "lint": "npm run lint --workspaces",
+    "test": "npm run test -w ofertas-api",
+    "seed": "npm run seed -w ofertas-api"
+  }
+}
