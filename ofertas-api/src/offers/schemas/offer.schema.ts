@@ -30,3 +30,6 @@ export class Offer {
 }
 
 export const OfferSchema = SchemaFactory.createForClass(Offer);
+
+OfferSchema.index({ status: 1, expiresAt: 1 });
+OfferSchema.index({ ownerId: 1, createdAt: -1 });

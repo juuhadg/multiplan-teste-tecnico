@@ -13,3 +13,4 @@ export class Interest {
 export const InterestSchema = SchemaFactory.createForClass(Interest);
 
 InterestSchema.index({ offerId: 1, buyerId: 1 }, { unique: true });
+InterestSchema.index({ buyerId: 1, offerId: 1 });
