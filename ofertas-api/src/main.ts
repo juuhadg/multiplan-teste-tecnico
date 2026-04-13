@@ -27,5 +27,8 @@ async function bootstrap() {
   const config = app.get(ConfigService);
   const port = config.get<number>('PORT') ?? 3000;
   await app.listen(port);
+  console.log(`API rodando em http://localhost:${port}`);
+  console.log(`Swagger em   http://localhost:${port}/api`);
+  console.log(`Frontend em  http://localhost:5173`);
 }
 bootstrap();

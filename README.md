@@ -71,14 +71,9 @@ O front sobe em **http://localhost:5173**.
 O back sobe em **http://localhost:3000**
 
 
-## Credenciais de teste
+## Detalhe para teste
 
-Geradas por `npm run seed`.
-
-| Role      | E-mail                | Senha    |
-|-----------|-----------------------|----------|
-| Lojista   | `lojista@email.com`   | `123456` |
-| Comprador | `comprador@email.com` | `123456` |
+Para simular a notificacao em tempo real, abra o projeto denovo em uma outra aba anonima para conseguir criar e ver novas ofertas com 2 usuarios diferentes
 
 
 ## Algumas Decisões técnicas que tomei e seus tradeoffs
