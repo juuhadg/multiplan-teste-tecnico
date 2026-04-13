@@ -2,8 +2,11 @@
 ## Stack usada
 
 Banco de dados - MongoDB
+
 Backend - NestJS e SocketIO
+
 Frontend - React e Vite
+
 Swagger - http://localhost:3000/api
 
 ## Como rodar
