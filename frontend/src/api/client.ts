@@ -1,17 +1,20 @@
 import axios, { AxiosError, type InternalAxiosRequestConfig } from 'axios';
+import { jwtDecode } from 'jwt-decode';
 import { tokenStorage } from './tokens';
 
 const baseURL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000';
 
 export const api = axios.create({ baseURL });
 
-api.interceptors.request.use((config) => {
-  const token = tokenStorage.getAccess();
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+function isTokenExpired(token: string, bufferSeconds = 30): boolean {
+  try {
+    const { exp } = jwtDecode<{ exp: number }>(token);
+    if (!exp) return true;
+    return exp * 1000 < Date.now() + bufferSeconds * 1000;
+  } catch {
+    return true;
   }
-  return config;
-});
+}
 
 type RetriableConfig = InternalAxiosRequestConfig & { _retry?: boolean };
 
@@ -33,6 +36,30 @@ async function refreshAccessToken(): Promise<string | null> {
     return null;
   }
 }
+
+api.interceptors.request.use(async (config) => {
+  if (config.url?.startsWith('/auth/')) return config;
+
+  let token = tokenStorage.getAccess();
+
+  if (token && isTokenExpired(token)) {
+    refreshInFlight ??= refreshAccessToken().finally(() => {
+      refreshInFlight = null;
+    });
+    token = await refreshInFlight;
+
+    if (!token) {
+      window.location.href = '/login';
+      return Promise.reject(new Error('Session expired'));
+    }
+  }
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return config;
+});
 
 api.interceptors.response.use(
   (response) => response,

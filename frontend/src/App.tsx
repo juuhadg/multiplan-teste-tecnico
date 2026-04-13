@@ -30,7 +30,7 @@ function App() {
           <Route
             path="/feed"
             element={
-              <ProtectedRoute role="comprador">
+              <ProtectedRoute>
                 <CompradorFeed />
               </ProtectedRoute>
             }

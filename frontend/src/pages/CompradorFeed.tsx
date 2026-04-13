@@ -5,6 +5,7 @@ import { OfferCard } from '../components/OfferCard';
 import { NewOfferToast } from '../components/NewOfferToast';
 import { offersApi } from '../api/offers';
 import { interestsApi } from '../api/interests';
+import { useAuth } from '../auth/AuthContext';
 import { useNewOfferListener } from '../hooks/useSocket';
 import type { NewOfferEvent, Offer, OfferStatus } from '../types';
 
@@ -13,8 +14,10 @@ type StatusFilter = 'all' | OfferStatus;
 const PAGE_SIZE = 9;
 
 export function CompradorFeed() {
+  const { user } = useAuth();
+  const canRegisterInterest = user?.role === 'comprador';
   const [offers, setOffers] = useState<Offer[]>([]);
-  const [total, setTotal] = useState(0);
+  const [hasNext, setHasNext] = useState(false);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -33,7 +36,7 @@ export function CompradorFeed() {
         ...(filter !== 'all' ? { status: filter } : {}),
       });
       setOffers(res.items);
-      setTotal(res.total);
+      setHasNext(res.hasNext);
     } catch {
       setError('Falha ao carregar ofertas');
     } finally {
@@ -48,8 +51,6 @@ export function CompradorFeed() {
   useEffect(() => {
     setPage(1);
   }, [filter]);
-
-  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   const handleNewOffer = useCallback(
     (evt: NewOfferEvent) => {
@@ -139,19 +140,13 @@ export function CompradorFeed() {
         </div>
       )}
 
-      {total > 0 && (
-        <p className="mb-3 text-xs text-slate-500">
-          {total} oferta{total > 1 ? 's' : ''} encontrada{total > 1 ? 's' : ''}
-        </p>
-      )}
-
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {offers.map((offer) => (
           <OfferCard
             key={offer._id}
             offer={offer}
             action={
-              offer.status === 'active' && offer.stock > 0 ? (
+              canRegisterInterest && offer.status === 'active' && offer.stock > 0 ? (
                 <button
                   onClick={() => handleInterest(offer)}
                   disabled={interestingId === offer._id}
@@ -165,7 +160,7 @@ export function CompradorFeed() {
         ))}
       </div>
 
-      {totalPages > 1 && (
+      {(page > 1 || hasNext) && (
         <div className="mt-6 flex items-center justify-between">
           <button
             onClick={() => setPage((p) => Math.max(1, p - 1))}
@@ -174,12 +169,10 @@ export function CompradorFeed() {
           >
             Anterior
           </button>
-          <span className="text-sm text-slate-600">
-            Pagina {page} de {totalPages}
-          </span>
+          <span className="text-sm text-slate-600">Pagina {page}</span>
           <button
-            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-            disabled={page >= totalPages || loading}
+            onClick={() => setPage((p) => p + 1)}
+            disabled={!hasNext || loading}
             className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:border-slate-300 disabled:cursor-not-allowed disabled:opacity-50"
           >
             Proxima

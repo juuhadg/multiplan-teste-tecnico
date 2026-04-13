@@ -40,7 +40,7 @@ export interface CreateOfferInput {
 
 export interface PaginatedOffers {
   items: Offer[];
-  total: number;
+  hasNext: boolean;
   page: number;
   limit: number;
 }
