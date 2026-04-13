@@ -1,4 +1,4 @@
-import { ConflictException } from '@nestjs/common';
+import { ConflictException, NotFoundException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { Types } from 'mongoose';
 import { OfferStatus } from '../offers/enums/offer-status.enum';
@@ -29,6 +29,7 @@ describe('InterestsService', () => {
           useValue: {
             findOne: jest.fn(),
             create: jest.fn(),
+            deleteOne: jest.fn(),
           },
         },
         {
@@ -36,6 +37,7 @@ describe('InterestsService', () => {
           useValue: {
             decrementStock: jest.fn(),
             updateOne: jest.fn(),
+            incrementStockAfterInterestWithdrawal: jest.fn(),
           },
         },
       ],
@@ -102,6 +104,56 @@ describe('InterestsService', () => {
       await service.register(offerId, buyerId);
 
       expect(offersRepo.updateOne).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('unregister', () => {
+    it('should delete interest and increment stock', async () => {
+      interestsRepo.findOne.mockResolvedValue(mockInterest);
+      interestsRepo.deleteOne.mockResolvedValue({ deletedCount: 1 } as any);
+      offersRepo.incrementStockAfterInterestWithdrawal.mockResolvedValue({
+        _id: new Types.ObjectId(offerId),
+        stock: 4,
+        interestCount: 0,
+        status: OfferStatus.ACTIVE,
+        expiresAt: new Date('2030-01-01'),
+      } as any);
+
+      await service.unregister(offerId, buyerId);
+
+      expect(interestsRepo.deleteOne).toHaveBeenCalled();
+      expect(offersRepo.incrementStockAfterInterestWithdrawal).toHaveBeenCalledWith(
+        offerId,
+      );
+      expect(offersRepo.updateOne).not.toHaveBeenCalled();
+    });
+
+    it('should throw NotFoundException when no interest', async () => {
+      interestsRepo.findOne.mockResolvedValue(null);
+
+      await expect(service.unregister(offerId, buyerId)).rejects.toThrow(
+        NotFoundException,
+      );
+      expect(interestsRepo.deleteOne).not.toHaveBeenCalled();
+    });
+
+    it('should reactivate offer when was sold out and stock returns', async () => {
+      interestsRepo.findOne.mockResolvedValue(mockInterest);
+      interestsRepo.deleteOne.mockResolvedValue({ deletedCount: 1 } as any);
+      offersRepo.incrementStockAfterInterestWithdrawal.mockResolvedValue({
+        _id: new Types.ObjectId(offerId),
+        stock: 1,
+        interestCount: 0,
+        status: OfferStatus.SOLD_OUT,
+        expiresAt: new Date('2030-01-01'),
+      } as any);
+
+      await service.unregister(offerId, buyerId);
+
+      expect(offersRepo.updateOne).toHaveBeenCalledWith(
+        { _id: offerId },
+        { $set: { status: OfferStatus.ACTIVE } },
+      );
     });
   });
 });

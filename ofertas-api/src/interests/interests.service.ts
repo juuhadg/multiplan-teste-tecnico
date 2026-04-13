@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Types } from 'mongoose';
 import { OfferStatus } from '../offers/enums/offer-status.enum';
 import { OffersRepository } from '../offers/offers.repository';
@@ -39,5 +43,42 @@ export class InterestsService {
       offerId: offerObjectId,
       buyerId: buyerObjectId,
     });
+  }
+
+  async unregister(offerId: string, buyerId: string) {
+    const offerObjectId = new Types.ObjectId(offerId);
+    const buyerObjectId = new Types.ObjectId(buyerId);
+
+    const existing = await this.interestsRepository.findOne({
+      offerId: offerObjectId,
+      buyerId: buyerObjectId,
+    });
+    if (!existing) {
+      throw new NotFoundException('Interesse não encontrado');
+    }
+
+    await this.interestsRepository.deleteOne({
+      offerId: offerObjectId,
+      buyerId: buyerObjectId,
+    });
+
+    const updated =
+      await this.offersRepository.incrementStockAfterInterestWithdrawal(
+        offerId,
+      );
+    if (!updated) {
+      throw new NotFoundException('Oferta não encontrada');
+    }
+
+    if (
+      updated.status === OfferStatus.SOLD_OUT &&
+      updated.stock > 0 &&
+      new Date(updated.expiresAt).getTime() > Date.now()
+    ) {
+      await this.offersRepository.updateOne(
+        { _id: offerId },
+        { $set: { status: OfferStatus.ACTIVE } },
+      );
+    }
   }
 }

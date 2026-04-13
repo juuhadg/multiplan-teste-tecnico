@@ -1,4 +1,4 @@
-import { Controller, Param, Post } from '@nestjs/common';
+import { Controller, Delete, HttpCode, HttpStatus, Param, Post } from '@nestjs/common';
 import { Auth } from '../auth/decorators/auth.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { Role } from '../auth/enums/role.enum';
@@ -16,5 +16,15 @@ export class InterestsController {
     @CurrentUser() user: JwtPayload,
   ) {
     return this.interestsService.register(offerId, user.sub);
+  }
+
+  @Delete()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Auth(Role.COMPRADOR)
+  unregister(
+    @Param('offerId') offerId: string,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    return this.interestsService.unregister(offerId, user.sub);
   }
 }
