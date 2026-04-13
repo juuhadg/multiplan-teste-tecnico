@@ -1,11 +1,15 @@
 import { api } from './client';
 import type { CreateOfferInput, Offer, OfferStatus, PaginatedOffers } from '../types';
 
+export type OffersListSort = 'recent' | 'expiresSoon';
+
 export interface OffersQuery {
   page?: number;
   limit?: number;
   status?: OfferStatus;
   ownerId?: string;
+  q?: string;
+  sort?: OffersListSort;
 }
 
 export const offersApi = {

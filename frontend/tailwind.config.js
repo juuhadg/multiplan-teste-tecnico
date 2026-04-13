@@ -26,6 +26,20 @@ export default {
         'card-hover':
           '0 2px 4px rgba(15, 23, 42, 0.06), 0 12px 28px rgba(30, 90, 56, 0.16)',
       },
+      keyframes: {
+        'toast-in': {
+          '0%': { opacity: '0', transform: 'translate3d(14px, 10px, 0) scale(0.96)' },
+          '100%': { opacity: '1', transform: 'translate3d(0, 0, 0) scale(1)' },
+        },
+        'toast-out': {
+          '0%': { opacity: '1', transform: 'translate3d(0, 0, 0) scale(1)' },
+          '100%': { opacity: '0', transform: 'translate3d(10px, 8px, 0) scale(0.96)' },
+        },
+      },
+      animation: {
+        'toast-in': 'toast-in 0.48s cubic-bezier(0.16, 1, 0.3, 1) both',
+        'toast-out': 'toast-out 0.32s cubic-bezier(0.4, 0, 1, 1) both',
+      },
     },
   },
   plugins: [],

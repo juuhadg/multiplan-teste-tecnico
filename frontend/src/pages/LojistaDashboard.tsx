@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Layout } from '../components/Layout';
 import { OfferCard } from '../components/OfferCard';
-import { OfferForm } from '../components/OfferForm';
+import { OfferFormModal } from '../components/OfferFormModal';
 import { offersApi } from '../api/offers';
 import { useAuth } from '../auth/AuthContext';
 import type { Offer } from '../types';
 
-const PAGE_SIZE = 6;
+const PAGE_SIZE = 9;
 
 export function LojistaDashboard() {
   const { user } = useAuth();
@@ -16,6 +16,12 @@ export function LojistaDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editing, setEditing] = useState<Offer | null>(null);
+  const [formOpen, setFormOpen] = useState(false);
+
+  function closeForm() {
+    setFormOpen(false);
+    setEditing(null);
+  }
 
   const load = useCallback(async () => {
     if (!user) return;
@@ -59,95 +65,113 @@ export function LojistaDashboard() {
 
   function handleUpdated(offer: Offer) {
     setOffers((prev) => prev.map((o) => (o._id === offer._id ? offer : o)));
-    setEditing(null);
   }
 
   return (
     <Layout>
-      <div className="grid gap-6 lg:grid-cols-[1fr_22rem]">
-        <section>
-          <div className="mb-5">
-            <h1 className="text-2xl font-bold tracking-tight">Minhas ofertas</h1>
-            <p className="mt-1 text-sm text-slate-600">
+      <section>
+        <div className="relative mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+              Minhas ofertas
+            </h1>
+            <p className="mt-1 max-w-xl text-sm text-slate-600">
               Gerencie suas ofertas e acompanhe os interessados
             </p>
           </div>
+          <button
+            type="button"
+            onClick={() => {
+              setEditing(null);
+              setFormOpen(true);
+            }}
+            className="inline-flex shrink-0 items-center justify-center rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-200"
+          >
+            Nova oferta
+          </button>
+        </div>
 
-          {loading && <p className="text-slate-600">Carregando...</p>}
-          {error && (
-            <p className="mb-3 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700 ring-1 ring-rose-200">
-              {error}
+        {loading && <p className="text-slate-600">Carregando...</p>}
+        {error && (
+          <p className="mb-3 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700 ring-1 ring-rose-200">
+            {error}
+          </p>
+        )}
+
+        {!loading && offers.length === 0 && (
+          <div className="rounded-2xl border border-dashed border-slate-300 bg-white/50 p-8 text-center">
+            <p className="text-sm text-slate-600">
+              Voce ainda nao publicou nenhuma oferta.
             </p>
-          )}
-
-          {!loading && offers.length === 0 && (
-            <div className="rounded-2xl border border-dashed border-slate-300 bg-white/50 p-8 text-center">
-              <p className="text-sm text-slate-600">
-                Voce ainda nao publicou nenhuma oferta.
-              </p>
-              <p className="mt-1 text-xs text-slate-500">
-                Use o formulario ao lado para criar a primeira.
-              </p>
-            </div>
-          )}
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            {offers.map((offer) => (
-              <OfferCard
-                key={offer._id}
-                offer={offer}
-                action={
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => setEditing(offer)}
-                      className="flex-1 rounded-lg border border-brand-200 bg-brand-50 py-2 text-sm font-semibold text-brand-700 transition hover:bg-brand-100"
-                    >
-                      Editar
-                    </button>
-                    {offer.status === 'active' && (
-                      <button
-                        onClick={() => handleClose(offer._id)}
-                        className="flex-1 rounded-lg border border-rose-200 bg-rose-50 py-2 text-sm font-semibold text-rose-700 transition hover:bg-rose-100"
-                      >
-                        Encerrar
-                      </button>
-                    )}
-                  </div>
-                }
-              />
-            ))}
+            <p className="mt-1 text-xs text-slate-500">
+              Clique em Nova oferta para publicar a primeira.
+            </p>
           </div>
+        )}
 
-          {(page > 1 || hasNext) && (
-            <div className="mt-6 flex items-center justify-between">
-              <button
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page === 1 || loading}
-                className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:border-slate-300 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                Anterior
-              </button>
-              <span className="text-sm text-slate-600">Pagina {page}</span>
-              <button
-                onClick={() => setPage((p) => p + 1)}
-                disabled={!hasNext || loading}
-                className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:border-slate-300 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                Proxima
-              </button>
-            </div>
-          )}
-        </section>
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {offers.map((offer) => (
+            <OfferCard
+              key={offer._id}
+              offer={offer}
+              showStatusBadge
+              action={
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditing(offer);
+                      setFormOpen(true);
+                    }}
+                    className="inline-flex flex-1 items-center justify-center rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-200"
+                  >
+                    Editar
+                  </button>
+                  {offer.status === 'active' && (
+                    <button
+                      type="button"
+                      onClick={() => handleClose(offer._id)}
+                      className="inline-flex flex-1 items-center justify-center rounded-lg bg-red-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-200"
+                    >
+                      Encerrar
+                    </button>
+                  )}
+                </div>
+              }
+            />
+          ))}
+        </div>
 
-        <aside>
-          <OfferForm
-            onCreated={handleCreated}
-            editing={editing}
-            onUpdated={handleUpdated}
-            onCancelEdit={() => setEditing(null)}
-          />
-        </aside>
-      </div>
+        {(page > 1 || hasNext) && (
+          <div className="mt-8 flex items-center justify-between border-t border-slate-200/80 pt-6">
+            <button
+              type="button"
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1 || loading}
+              className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-300 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Anterior
+            </button>
+            <span className="text-sm text-slate-600">Página {page}</span>
+            <button
+              type="button"
+              onClick={() => setPage((p) => p + 1)}
+              disabled={!hasNext || loading}
+              className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-300 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Próxima
+            </button>
+          </div>
+        )}
+      </section>
+
+      <OfferFormModal
+        open={formOpen}
+        onClose={closeForm}
+        editing={editing}
+        onCreated={handleCreated}
+        onUpdated={handleUpdated}
+      />
     </Layout>
   );
 }

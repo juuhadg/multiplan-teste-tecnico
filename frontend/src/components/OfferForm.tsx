@@ -15,6 +15,7 @@ interface Props {
   editing?: Offer | null;
   onUpdated?: (offer: Offer) => void;
   onCancelEdit?: () => void;
+  embedded?: boolean;
 }
 
 const EXPIRY_PRESETS = [
@@ -42,7 +43,13 @@ function humanizeRemaining(iso: string): string | null {
   return `expira em ${days} dia${days > 1 ? 's' : ''}`;
 }
 
-export function OfferForm({ onCreated, editing, onUpdated, onCancelEdit }: Props) {
+export function OfferForm({
+  onCreated,
+  editing,
+  onUpdated,
+  onCancelEdit,
+  embedded = false,
+}: Props) {
   const isEditing = !!editing;
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -126,29 +133,35 @@ export function OfferForm({ onCreated, editing, onUpdated, onCancelEdit }: Props
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-card"
+      className={
+        embedded
+          ? 'space-y-4'
+          : 'space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-card'
+      }
     >
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <h2 className="text-lg font-semibold">
-            {isEditing ? 'Editar oferta' : 'Nova oferta'}
-          </h2>
-          <p className="text-xs text-slate-500">
-            {isEditing
-              ? 'Altere os campos e salve as mudanças'
-              : 'Publique e notifique compradores em tempo real'}
-          </p>
+      {!embedded && (
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-semibold">
+              {isEditing ? 'Editar oferta' : 'Nova oferta'}
+            </h2>
+            <p className="text-xs text-slate-500">
+              {isEditing
+                ? 'Altere os campos e salve as mudanças'
+                : 'Publique e notifique compradores em tempo real'}
+            </p>
+          </div>
+          {isEditing && (
+            <button
+              type="button"
+              onClick={onCancelEdit}
+              className="text-xs font-medium text-slate-500 hover:text-slate-800"
+            >
+              Cancelar
+            </button>
+          )}
         </div>
-        {isEditing && (
-          <button
-            type="button"
-            onClick={onCancelEdit}
-            className="text-xs font-medium text-slate-500 hover:text-slate-800"
-          >
-            Cancelar
-          </button>
-        )}
-      </div>
+      )}
 
       <div>
         <label className="label">Titulo</label>

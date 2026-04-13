@@ -26,6 +26,7 @@ export interface Offer {
   ownerId: string;
   ownerName?: string;
   interestCount: number;
+  hasMyInterest?: boolean;
   createdAt: string;
   updatedAt: string;
 }
