@@ -22,10 +22,11 @@ export class OffersRepository {
     filter: OfferFilterDto,
     page = 1,
     limit = 10,
+    sort: Record<string, 1 | -1> = { createdAt: -1 },
   ): Promise<HydratedDocument<Offer>[]> {
     return this.offerModel
       .find(filter)
-      .sort({ createdAt: -1 })
+      .sort(sort)
       .skip((page - 1) * limit)
       .limit(limit + 1)
       .populate('ownerId', 'name')
@@ -47,6 +48,21 @@ export class OffersRepository {
           stock: { $gt: 0 },
         },
         { $inc: { stock: -1, interestCount: 1 } },
+        { new: true },
+      )
+      .exec();
+  }
+
+  incrementStockAfterInterestWithdrawal(
+    offerId: string,
+  ): Promise<HydratedDocument<Offer> | null> {
+    return this.offerModel
+      .findOneAndUpdate(
+        {
+          _id: new Types.ObjectId(offerId),
+          interestCount: { $gt: 0 },
+        },
+        { $inc: { stock: 1, interestCount: -1 } },
         { new: true },
       )
       .exec();

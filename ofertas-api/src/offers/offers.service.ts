@@ -1,20 +1,32 @@
 import {
   ForbiddenException,
+  forwardRef,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { Types } from 'mongoose';
+import { InterestsRepository } from '../interests/interests.repository';
 import { CreateOfferDto } from './dto/create-offer.dto';
 import { UpdateOfferDto } from './dto/update-offer.dto';
 import { OfferStatus } from './enums/offer-status.enum';
+import { OfferFilterDto } from './dto/offer-filter.dto';
 import { OffersGateway } from './offers.gateway';
 import { OffersRepository } from './offers.repository';
+
+function escapeRegex(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+export type OffersListSort = 'recent' | 'expiresSoon';
 
 @Injectable()
 export class OffersService {
   constructor(
     private readonly offersRepository: OffersRepository,
     private readonly offersGateway: OffersGateway,
+    @Inject(forwardRef(() => InterestsRepository))
+    private readonly interestsRepository: InterestsRepository,
   ) {}
 
   async findAll(
@@ -22,11 +34,26 @@ export class OffersService {
     limit: number,
     status?: OfferStatus,
     ownerId?: string,
+    q?: string,
+    sort: OffersListSort = 'recent',
+    viewerId?: string,
   ) {
-    const filter: Record<string, unknown> = {};
+    const filter: OfferFilterDto = {};
     if (status) filter.status = status;
     if (ownerId) filter.ownerId = new Types.ObjectId(ownerId);
-    const offers = await this.offersRepository.find(filter, page, limit);
+    const trimmed = q?.trim();
+    if (trimmed) {
+      const pattern = new RegExp(escapeRegex(trimmed), 'i');
+      filter.$or = [{ title: pattern }, { description: pattern }];
+    }
+    const sortSpec: Record<string, 1 | -1> =
+      sort === 'expiresSoon' ? { expiresAt: 1 } : { createdAt: -1 };
+    const offers = await this.offersRepository.find(
+      filter,
+      page,
+      limit,
+      sortSpec,
+    );
     const hasNext = offers.length > limit;
     const sliced = hasNext ? offers.slice(0, limit) : offers;
     const items = sliced.map((doc) => {
@@ -42,6 +69,31 @@ export class OffersService {
         ownerName: isPopulated ? owner.name : undefined,
       };
     });
+
+    if (viewerId && items.length > 0) {
+      const buyerOid = new Types.ObjectId(viewerId);
+      const offerOids = items.map(
+        (item) => new Types.ObjectId(String(item._id)),
+      );
+      const interestedOfferIds =
+        await this.interestsRepository.findOfferIdsByBuyer(
+          buyerOid,
+          offerOids,
+        );
+      const interested = new Set(
+        interestedOfferIds.map((id) => id.toString()),
+      );
+      return {
+        items: items.map((item) => ({
+          ...item,
+          hasMyInterest: interested.has(String(item._id)),
+        })),
+        hasNext,
+        page,
+        limit,
+      };
+    }
+
     return { items, hasNext, page, limit };
   }
 

@@ -4,6 +4,7 @@ import {
 } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { Types } from 'mongoose';
+import { InterestsRepository } from '../interests/interests.repository';
 import { OfferStatus } from './enums/offer-status.enum';
 import { OffersGateway } from './offers.gateway';
 import { OffersRepository } from './offers.repository';
@@ -47,6 +48,12 @@ describe('OffersService', () => {
             notifyNewOffer: jest.fn(),
           },
         },
+        {
+          provide: InterestsRepository,
+          useValue: {
+            findOfferIdsByBuyer: jest.fn().mockResolvedValue([]),
+          },
+        },
       ],
     }).compile();
 
@@ -61,9 +68,15 @@ describe('OffersService', () => {
 
       await service.findAll(1, 10, OfferStatus.ACTIVE, ownerId);
 
-      const filter = repository.find.mock.calls[0][0] as any;
-      expect(filter.status).toBe(OfferStatus.ACTIVE);
-      expect(filter.ownerId).toBeInstanceOf(Types.ObjectId);
+      expect(repository.find).toHaveBeenCalledWith(
+        expect.objectContaining({
+          status: OfferStatus.ACTIVE,
+          ownerId: expect.any(Types.ObjectId),
+        }),
+        1,
+        10,
+        { createdAt: -1 },
+      );
     });
 
     it('should pass empty filter when no params', async () => {
@@ -71,7 +84,43 @@ describe('OffersService', () => {
 
       await service.findAll(1, 10);
 
-      expect(repository.find).toHaveBeenCalledWith({}, 1, 10);
+      expect(repository.find).toHaveBeenCalledWith({}, 1, 10, {
+        createdAt: -1,
+      });
+    });
+
+    it('should add text search with escaped regex', async () => {
+      repository.find.mockResolvedValue([]);
+
+      await service.findAll(1, 10, undefined, undefined, 'cupom (x)');
+
+      expect(repository.find).toHaveBeenCalledWith(
+        expect.objectContaining({
+          $or: [
+            { title: expect.any(RegExp) },
+            { description: expect.any(RegExp) },
+          ],
+        }),
+        1,
+        10,
+        { createdAt: -1 },
+      );
+      const passed = repository.find.mock.calls[0][0] as {
+        $or: Array<{ title?: RegExp; description?: RegExp }>;
+      };
+      expect(passed.$or[0].title!.test('cupom (x) na loja')).toBe(true);
+      expect(passed.$or[0].title!.test('outro')).toBe(false);
+      expect(passed.$or[1].description!.test('desc com cupom (x)')).toBe(true);
+    });
+
+    it('should sort by expiresAt when requested', async () => {
+      repository.find.mockResolvedValue([]);
+
+      await service.findAll(1, 10, undefined, undefined, undefined, 'expiresSoon');
+
+      expect(repository.find).toHaveBeenCalledWith({}, 1, 10, {
+        expiresAt: 1,
+      });
     });
   });
 
