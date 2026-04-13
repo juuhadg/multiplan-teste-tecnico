@@ -38,6 +38,13 @@ export interface CreateOfferInput {
   expiresAt: string;
 }
 
+export interface PaginatedOffers {
+  items: Offer[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
 export interface NewOfferEvent {
   id: string;
   title: string;

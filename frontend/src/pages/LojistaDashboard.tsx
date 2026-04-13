@@ -6,9 +6,13 @@ import { offersApi } from '../api/offers';
 import { useAuth } from '../auth/AuthContext';
 import type { Offer } from '../types';
 
+const PAGE_SIZE = 6;
+
 export function LojistaDashboard() {
   const { user } = useAuth();
   const [offers, setOffers] = useState<Offer[]>([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editing, setEditing] = useState<Offer | null>(null);
@@ -18,18 +22,25 @@ export function LojistaDashboard() {
     setLoading(true);
     setError(null);
     try {
-      const data = await offersApi.findAll({ ownerId: user.id, limit: 50 });
-      setOffers(data);
+      const res = await offersApi.findAll({
+        ownerId: user.id,
+        page,
+        limit: PAGE_SIZE,
+      });
+      setOffers(res.items);
+      setTotal(res.total);
     } catch {
       setError('Falha ao carregar ofertas');
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, page]);
 
   useEffect(() => {
     void load();
   }, [load]);
+
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   async function handleClose(id: string) {
     try {
@@ -41,7 +52,12 @@ export function LojistaDashboard() {
   }
 
   function handleCreated(offer: Offer) {
-    setOffers((prev) => [offer, ...prev]);
+    if (page === 1) {
+      setOffers((prev) => [offer, ...prev].slice(0, PAGE_SIZE));
+    } else {
+      setPage(1);
+    }
+    setTotal((t) => t + 1);
   }
 
   function handleUpdated(offer: Offer) {
@@ -78,6 +94,12 @@ export function LojistaDashboard() {
             </div>
           )}
 
+          {total > 0 && (
+            <p className="mb-3 text-xs text-slate-500">
+              {total} oferta{total > 1 ? 's' : ''} no total
+            </p>
+          )}
+
           <div className="grid gap-4 sm:grid-cols-2">
             {offers.map((offer) => (
               <OfferCard
@@ -104,6 +126,28 @@ export function LojistaDashboard() {
               />
             ))}
           </div>
+
+          {totalPages > 1 && (
+            <div className="mt-6 flex items-center justify-between">
+              <button
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page === 1 || loading}
+                className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:border-slate-300 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Anterior
+              </button>
+              <span className="text-sm text-slate-600">
+                Pagina {page} de {totalPages}
+              </span>
+              <button
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={page >= totalPages || loading}
+                className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:border-slate-300 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Proxima
+              </button>
+            </div>
+          )}
         </section>
 
         <aside>

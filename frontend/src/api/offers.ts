@@ -1,5 +1,5 @@
 import { api } from './client';
-import type { CreateOfferInput, Offer, OfferStatus } from '../types';
+import type { CreateOfferInput, Offer, OfferStatus, PaginatedOffers } from '../types';
 
 export interface OffersQuery {
   page?: number;
@@ -10,7 +10,7 @@ export interface OffersQuery {
 
 export const offersApi = {
   findAll: (query: OffersQuery = {}) =>
-    api.get<Offer[]>('/offers', { params: query }).then((r) => r.data),
+    api.get<PaginatedOffers>('/offers', { params: query }).then((r) => r.data),
 
   create: (input: CreateOfferInput) =>
     api.post<Offer>('/offers', input).then((r) => r.data),

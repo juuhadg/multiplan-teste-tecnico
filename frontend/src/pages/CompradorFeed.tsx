@@ -10,8 +10,12 @@ import type { NewOfferEvent, Offer, OfferStatus } from '../types';
 
 type StatusFilter = 'all' | OfferStatus;
 
+const PAGE_SIZE = 9;
+
 export function CompradorFeed() {
   const [offers, setOffers] = useState<Offer[]>([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<StatusFilter>('active');
@@ -23,30 +27,38 @@ export function CompradorFeed() {
     setLoading(true);
     setError(null);
     try {
-      const data = await offersApi.findAll({
-        limit: 50,
+      const res = await offersApi.findAll({
+        page,
+        limit: PAGE_SIZE,
         ...(filter !== 'all' ? { status: filter } : {}),
       });
-      setOffers(data);
+      setOffers(res.items);
+      setTotal(res.total);
     } catch {
       setError('Falha ao carregar ofertas');
     } finally {
       setLoading(false);
     }
-  }, [filter]);
+  }, [filter, page]);
 
   useEffect(() => {
     void load();
   }, [load]);
 
+  useEffect(() => {
+    setPage(1);
+  }, [filter]);
+
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+
   const handleNewOffer = useCallback(
     (evt: NewOfferEvent) => {
       setNewOffer(evt);
-      if (filter === 'active' || filter === 'all') {
+      if ((filter === 'active' || filter === 'all') && page === 1) {
         void load();
       }
     },
-    [filter, load],
+    [filter, load, page],
   );
 
   useNewOfferListener(handleNewOffer);
@@ -127,6 +139,12 @@ export function CompradorFeed() {
         </div>
       )}
 
+      {total > 0 && (
+        <p className="mb-3 text-xs text-slate-500">
+          {total} oferta{total > 1 ? 's' : ''} encontrada{total > 1 ? 's' : ''}
+        </p>
+      )}
+
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {offers.map((offer) => (
           <OfferCard
@@ -146,6 +164,28 @@ export function CompradorFeed() {
           />
         ))}
       </div>
+
+      {totalPages > 1 && (
+        <div className="mt-6 flex items-center justify-between">
+          <button
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page === 1 || loading}
+            className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:border-slate-300 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Anterior
+          </button>
+          <span className="text-sm text-slate-600">
+            Pagina {page} de {totalPages}
+          </span>
+          <button
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={page >= totalPages || loading}
+            className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:border-slate-300 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Proxima
+          </button>
+        </div>
+      )}
 
       {toast && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white shadow-xl ring-1 ring-white/10">

@@ -32,6 +32,10 @@ export class OffersRepository {
       .exec();
   }
 
+  count(filter: OfferFilterDto): Promise<number> {
+    return this.offerModel.countDocuments(filter).exec();
+  }
+
   create(data: CreateOfferData): Promise<HydratedDocument<Offer>> {
     return this.offerModel.create(data);
   }

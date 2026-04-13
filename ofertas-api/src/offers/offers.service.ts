@@ -26,8 +26,11 @@ export class OffersService {
     const filter: Record<string, unknown> = {};
     if (status) filter.status = status;
     if (ownerId) filter.ownerId = new Types.ObjectId(ownerId);
-    const offers = await this.offersRepository.find(filter, page, limit);
-    return offers.map((doc) => {
+    const [offers, total] = await Promise.all([
+      this.offersRepository.find(filter, page, limit),
+      this.offersRepository.count(filter),
+    ]);
+    const items = offers.map((doc) => {
       const obj = doc.toObject();
       const owner = obj.ownerId as unknown as
         | { _id: Types.ObjectId; name: string }
@@ -40,6 +43,7 @@ export class OffersService {
         ownerName: isPopulated ? owner.name : undefined,
       };
     });
+    return { items, total, page, limit };
   }
 
   async create(dto: CreateOfferDto, ownerId: string) {
