@@ -27,13 +27,9 @@ export class OffersRepository {
       .find(filter)
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
-      .limit(limit)
+      .limit(limit + 1)
       .populate('ownerId', 'name')
       .exec();
-  }
-
-  count(filter: OfferFilterDto): Promise<number> {
-    return this.offerModel.countDocuments(filter).exec();
   }
 
   create(data: CreateOfferData): Promise<HydratedDocument<Offer>> {

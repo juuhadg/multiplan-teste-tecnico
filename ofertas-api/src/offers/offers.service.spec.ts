@@ -39,7 +39,6 @@ describe('OffersService', () => {
             findOne: jest.fn(),
             create: jest.fn(),
             updateOne: jest.fn(),
-            count: jest.fn().mockResolvedValue(0),
           },
         },
         {

@@ -75,16 +75,17 @@ describe('OffersRepository', () => {
   });
 
   describe('find', () => {
-    it('should return paginated results', async () => {
+    it('should return paginated results fetching one extra for hasNext detection', async () => {
       await repository.create(offerData);
       await repository.create({ ...offerData, title: 'Second' });
       await repository.create({ ...offerData, title: 'Third' });
+      await repository.create({ ...offerData, title: 'Fourth' });
 
       const page1 = await repository.find({}, 1, 2);
       const page2 = await repository.find({}, 2, 2);
 
-      expect(page1).toHaveLength(2);
-      expect(page2).toHaveLength(1);
+      expect(page1).toHaveLength(3);
+      expect(page2).toHaveLength(2);
     });
 
     it('should filter by status', async () => {
