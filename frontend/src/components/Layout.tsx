@@ -19,16 +19,14 @@ export function Layout({ children }: { children: ReactNode }) {
             to={user?.role === 'lojista' ? '/dashboard' : '/feed'}
             className="flex items-center gap-2 text-base font-bold tracking-tight"
           >
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-sm">
-              M
-            </span>
+            <img src="/multiplan.png" alt="Multiplan" className="h-8 w-8 rounded-lg object-contain" />
             <span>Multiplan Ofertas</span>
           </Link>
           {user && (
             <div className="flex items-center gap-3 text-sm">
               <div className="hidden text-right sm:block">
                 <div className="font-medium text-slate-900">{user.name}</div>
-                <div className="text-xs capitalize text-indigo-600">
+                <div className="text-xs capitalize text-brand-600">
                   {user.role}
                 </div>
               </div>

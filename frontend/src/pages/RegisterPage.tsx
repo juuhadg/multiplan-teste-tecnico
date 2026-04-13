@@ -38,7 +38,7 @@ export function RegisterPage() {
     <div className="flex min-h-full items-center justify-center p-4">
       <div className="w-full max-w-sm">
         <div className="mb-6 flex flex-col items-center text-center">
-          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 text-lg font-bold text-white shadow-lg">
+          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-brand-600 to-brand-800 text-lg font-bold text-white shadow-lg">
             M
           </div>
           <h1 className="text-2xl font-bold tracking-tight">Criar conta</h1>
@@ -94,7 +94,7 @@ export function RegisterPage() {
                   onClick={() => setRole(r)}
                   className={`rounded-lg border px-3 py-2.5 text-sm font-medium capitalize transition ${
                     role === r
-                      ? 'border-indigo-600 bg-indigo-600 text-white shadow-sm'
+                      ? 'border-brand-600 bg-brand-600 text-white shadow-sm'
                       : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
                   }`}
                 >
@@ -118,7 +118,7 @@ export function RegisterPage() {
             Ja tem conta?{' '}
             <Link
               to="/login"
-              className="font-semibold text-indigo-600 hover:text-indigo-700"
+              className="font-semibold text-brand-600 hover:text-brand-700"
             >
               Entrar
             </Link>

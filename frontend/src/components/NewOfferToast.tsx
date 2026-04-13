@@ -22,7 +22,7 @@ export function NewOfferToast({ offer, onClose }: Props) {
   return (
     <div className="fixed right-4 top-20 z-50 w-[22rem] max-w-[calc(100vw-2rem)]">
       <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl ring-1 ring-black/5">
-        <div className="flex items-center justify-between bg-gradient-to-r from-indigo-600 to-purple-600 px-4 py-2.5">
+        <div className="flex items-center justify-between bg-gradient-to-r from-brand-600 to-brand-800 px-4 py-2.5">
           <div className="flex items-center gap-2">
             <span className="relative flex h-2 w-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75"></span>
@@ -52,7 +52,7 @@ export function NewOfferToast({ offer, onClose }: Props) {
           <div className="mt-3 space-y-1 text-xs">
             <div className="flex justify-between">
               <span className="text-slate-500">Desconto</span>
-              <span className="font-semibold text-indigo-600">
+              <span className="font-semibold text-brand-600">
                 {offer.discount}%
               </span>
             </div>

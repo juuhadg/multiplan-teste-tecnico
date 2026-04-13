@@ -53,7 +53,7 @@ export function OfferCard({ offer, action }: Props) {
       <div className="mt-4 grid grid-cols-3 gap-3 text-xs">
         <div>
           <div className="text-slate-500">Desconto</div>
-          <div className="text-base font-semibold text-indigo-600">
+          <div className="text-base font-semibold text-brand-600">
             {offer.discount}%
           </div>
         </div>

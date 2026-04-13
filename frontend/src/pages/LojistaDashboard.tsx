@@ -109,7 +109,7 @@ export function LojistaDashboard() {
                   <div className="flex gap-2">
                     <button
                       onClick={() => setEditing(offer)}
-                      className="flex-1 rounded-lg border border-indigo-200 bg-indigo-50 py-2 text-sm font-semibold text-indigo-700 transition hover:bg-indigo-100"
+                      className="flex-1 rounded-lg border border-brand-200 bg-brand-50 py-2 text-sm font-semibold text-brand-700 transition hover:bg-brand-100"
                     >
                       Editar
                     </button>

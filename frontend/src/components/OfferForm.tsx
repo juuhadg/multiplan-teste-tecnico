@@ -174,7 +174,7 @@ export function OfferForm({ onCreated, editing, onUpdated, onCancelEdit }: Props
       <div>
         <div className="flex items-center justify-between">
           <label className="label">Desconto</label>
-          <span className="text-sm font-semibold text-indigo-600">
+          <span className="text-sm font-semibold text-brand-600">
             {discount}%
           </span>
         </div>
@@ -185,7 +185,7 @@ export function OfferForm({ onCreated, editing, onUpdated, onCancelEdit }: Props
           step={5}
           value={discount}
           onChange={(e) => setDiscount(Number(e.target.value))}
-          className="mt-2 w-full accent-indigo-600"
+          className="mt-2 w-full accent-brand-600"
         />
         <div className="mt-1 flex justify-between text-[10px] text-slate-400">
           <span>0%</span>
@@ -211,7 +211,7 @@ export function OfferForm({ onCreated, editing, onUpdated, onCancelEdit }: Props
             min={1}
             value={stock}
             onChange={(e) => setStock(Math.max(1, Number(e.target.value) || 1))}
-            className="h-11 w-full border border-slate-200 bg-white text-center text-base font-semibold text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100"
+            className="h-11 w-full border border-slate-200 bg-white text-center text-base font-semibold text-slate-900 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
           />
           <button
             type="button"
@@ -228,7 +228,7 @@ export function OfferForm({ onCreated, editing, onUpdated, onCancelEdit }: Props
         <div className="flex items-center justify-between">
           <label className="label">Validade</label>
           {remaining && (
-            <span className="text-xs font-medium text-indigo-600">
+            <span className="text-xs font-medium text-brand-600">
               {remaining}
             </span>
           )}
@@ -239,7 +239,7 @@ export function OfferForm({ onCreated, editing, onUpdated, onCancelEdit }: Props
               key={p.label}
               type="button"
               onClick={() => setPreset(p.hours)}
-              className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-700 transition hover:border-indigo-300 hover:text-indigo-700"
+              className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-700 transition hover:border-brand-300 hover:text-brand-700"
             >
               +{p.label}
             </button>

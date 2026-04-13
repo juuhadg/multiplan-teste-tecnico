@@ -116,7 +116,7 @@ export function CompradorFeed() {
               onClick={() => setFilter(f)}
               className={`rounded-lg px-3 py-1.5 font-medium transition ${
                 filter === f
-                  ? 'bg-indigo-600 text-white shadow-sm'
+                  ? 'bg-brand-600 text-white shadow-sm'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
